@@ -1,5 +1,5 @@
 const { Strategy, ExtractJwt } = require('passport-jwt');
-const secret = process.env.SECRET || 'some other secret as default';
+const secret = process.env.SECRET || 'the default secret';
 const mongoose = require('mongoose');
 const User = require('./models/user');
 const opts = {
