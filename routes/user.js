@@ -7,7 +7,7 @@ const passport = require('passport');
 const jwt = require('jsonwebtoken');
 
 router.post('/register', (req, res) => {
-  User.findOne({emailAddress: req.body.emailAddress})
+  User.findOne({email: req.body.email})
     .then(user => {
       if(user){
         let error = 'Email Address Exists in Database.';
@@ -15,7 +15,7 @@ router.post('/register', (req, res) => {
       } else {
         const newUser = new User({
           userName: req.body.userName,
-          emailAddress: req.body.emailAddress,
+          email: req.body.email,
           password: req.body.password
         });
 
@@ -33,10 +33,10 @@ router.post('/register', (req, res) => {
 });
 
 router.post('/login', (req, res) => {
-  const emailAddress = req.body.emailAddress;
+  const email = req.body.email;
   const password = req.body.password;
 
-  User.findOne({ emailAddress })
+  User.findOne({ email })
     .then(user => {
       if (!user) {
         errors.email = "No Account Found";
