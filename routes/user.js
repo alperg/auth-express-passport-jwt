@@ -35,6 +35,7 @@ router.post('/register', (req, res) => {
 router.post('/login', (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
+  const errors = {};
 
   User.findOne({ email })
     .then(user => {
