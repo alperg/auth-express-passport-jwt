@@ -1,0 +1,29 @@
+{
+  "name": "auth-express-passport-jwt",
+  "version": "1.0.0",
+  "description": "NodeJS Authentication with Password and JWT in Express",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alperg/auth-express-passport-jwt.git"
+  },
+  "keywords": [],
+  "author": "Alper Gokcehan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/alperg/auth-express-passport-jwt/issues"
+  },
+  "homepage": "https://github.com/alperg/auth-express-passport-jwt#readme",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.4",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "mongoose": "^5.7.14",
+    "passport": "^0.4.0",
+    "passport-jwt": "^4.0.0"
+  }
+}
