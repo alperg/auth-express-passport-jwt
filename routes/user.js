@@ -16,7 +16,8 @@ router.post('/register', (req, res) => {
         const newUser = new User({
           userName: req.body.userName,
           email: req.body.email,
-          password: req.body.password
+          password: req.body.password,
+          role: req.body.role
         });
 
         bcrypt.genSalt(10, (err, salt) => {
@@ -64,7 +65,5 @@ router.post('/login', (req, res) => {
       });
     });
 });
-
-// router.method('/path', passport.authenticate('jwt', {session: false}), (req,res) => ... );
 
 module.exports = router;

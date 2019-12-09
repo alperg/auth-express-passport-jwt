@@ -2,31 +2,41 @@
 require('dotenv').config(); 
 
 const express = require('express');
-const cp = require('cookie-parser');
+const cookieParser = require('cookie-parser');
+const expressSession = require('express-session');
+const MongoStore = require('connect-mongo')(expressSession);
 const mongoose = require('mongoose');
 const passport = require('passport');
+
 const app = express();
 const port = process.env.PORT || 7777;
-const dbPort = process.env.DB_PORT || 27017;
 const dbUrl = process.env.DB_URL || 'localhost';
 const dbCollection = process.env.DB_COLLECTION || 'auth-test';
 
 // Fixes an issue with a deprecated default in Mongoose.js
 mongoose.set('useCreateIndex', true);
 
-mongoose.connect(`mongodb://${dbUrl}/${dbCollection}`, {useNewUrlParser: true})
+mongoose.connect(`mongodb://${dbUrl}/${dbCollection}`, {useNewUrlParser: true, useUnifiedTopology: true })
   .then(_ => console.log('Connected Successfully to MongoDB'))
-  .catch(err => console.error(err));
-
-// Initializes the passport configuration
-app.use(passport.initialize());
+  .catch(err => console.error('Connection error: ', err));
 
 // Imports our configuration file which holds our verification callbacks and things like the secret for signing.
 require('./passport-config')(passport);
 
-app.use(cp());
+// Middlewares
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(expressSession({
+  secret: process.env.SECRET || 'this is the default passphrase',
+  store: new MongoStore({ mongooseConnection: mongoose.connection }),
+  resave: false,
+  saveUninitialized: false
+}));
+
+// Initializes the passport configuration
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Custom Middleware for logging the each request going to the API
 app.use((req, res, next) => {
@@ -46,8 +56,17 @@ app.use((req, res, next) => {
 // Registers our authentication routes with Express.
 app.use('/users', require('./routes/user.js'));
 
-app.use('/auth-test', passport.authenticate('jwt', { session: false }), (req, res) => {
-  res.json({ success: true });
+app.use('/auth-test1', passport.authenticate('jwt', { session: false }), (req, res) => {
+  res.json({ success: true, user: req.user });
+});
+
+app.use('/auth-test2', passport.authenticate('jwt', { session: false }), (req, res) => {
+  const allowedRoles = ['admin'];
+
+  if (!allowedRoles.includes(req.user.role)) {
+    return res.json({ success: false, message: 'You are not allowed to do this action!' });
+  }
+  return res.json({ success: true, user: req.user });
 });
 
 app.listen(port, err => {

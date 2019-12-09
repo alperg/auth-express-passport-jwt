@@ -1,25 +1,28 @@
 const { Strategy, ExtractJwt } = require('passport-jwt');
-const secret = process.env.SECRET || 'the default secret';
-const mongoose = require('mongoose');
 const User = require('./models/user');
-const opts = {
+
+const secret = process.env.SECRET || 'the default secret';
+const jwtOptions = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-  secretOrKey: secret
+  secretOrKey: secret,
+  passReqToCallback: true
 };
 
-//this sets how we handle tokens coming from the requests that come
+// this sets how we handle tokens coming from the requests that come
 // and also defines the key to be used when verifying the token.
 module.exports = passport => {
   passport.use(
-    new Strategy(opts, (payload, done) => {
+    new Strategy(jwtOptions, (req, payload, done) => {
       User.findById(payload.id)
         .then(user => {
           if(user) {
-            return done(null, {
+            req.user = {
               id: user.id,
               userName: user.userName,
               email: user.email,
-            });
+              role: user.role
+            };
+            return done(null, req.user);
           }
           return done(null, false);
         })
