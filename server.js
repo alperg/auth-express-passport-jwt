@@ -56,17 +56,29 @@ app.use((req, res, next) => {
 // Registers our authentication routes with Express.
 app.use('/users', require('./routes/user.js'));
 
-app.use('/auth-test1', passport.authenticate('jwt', { session: false }), (req, res) => {
+app.get('/auth-test1', passport.authenticate('jwt', { session: false }), (req, res) => {
   res.json({ success: true, user: req.user });
 });
 
-app.use('/auth-test2', passport.authenticate('jwt', { session: false }), (req, res) => {
-  const allowedRoles = ['admin'];
+app.get('/auth-test2', passport.authenticate('jwt', { session: false }), (req, res) => {
+  const allowedRoles = ['student'];
 
   if (!allowedRoles.includes(req.user.role)) {
     return res.json({ success: false, message: 'You are not allowed to do this action!' });
   }
   return res.json({ success: true, user: req.user });
+});
+
+const acl = require('./acl.js');
+
+app.get('/auth-test3', acl.checkRoles(['admin'], passport, 'jwt', { session: false }), (req, res, next) => {
+  console.log('here');
+  res.json({ haha: 'hahahaha'});
+});
+
+app.get('/auth-test4', passport.authenticate('jwt', { session: false }), acl.checkRoles2, (req, res, next) => {
+  console.log('here');
+  res.json({ haha: 'hakkahkahahahaha'});
 });
 
 app.listen(port, err => {
