@@ -1,2 +1,2 @@
 # auth-express-passport-jwt
-NodeJS Authentication with Password and JWT in Express
+NodeJS Authentication with Passport and JWT in an Express & MongoDB.
